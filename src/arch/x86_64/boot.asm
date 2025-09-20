@@ -11,6 +11,8 @@ start:
     call check_cpuid
     call check_long_mode
 
+    ; call set_up_page_tables
+
     ; print "OK"
     mov dword [0xb8000], 0x0f4b0f4f
 
@@ -90,8 +92,43 @@ check_long_mode:
     mov al, "2"
     jmp error
 
-section .bss
+set_up_page_tables:
+    ; map first P4 entry to P3 table
+    mov eax, p3_table   ; move x86_64 table entry (pointer) of p3_table
+    or eax, 0b11        ; add present + writable labels
+    mov [p4_table], eax ; add entry to 0th index of p4
 
+    mov eax, p2_table
+    or eax, 0b11
+    mov [p3_table], eax
+
+    mov ecx, 0
+    jmp .map_p2_table
+
+    ret
+
+.map_p2_table:
+    ; map ecx-th P2 entry to a huge page that starts at address 2MiB*ecx
+
+    mov eax, 0x200000  ; 2MiB
+    mul ecx            ; start address of ecx-th page
+    or eax, 0b10000011 ; present + writable + huge
+    mov [p2_table + ecx * 8], eax ; map ecx-th entry
+
+    inc ecx            ; increase counter
+    cmp ecx, 512       ; if counter == 512, the whole P2 table is mapped
+    jne .map_p2_table  ; else map the next entry
+
+    ret
+
+section .bss
+align 4096
+p4_table:
+    resb 4096
+p3_table:
+    resb 4096
+p2_table:
+    resb 4096
 stack_bottom:
     resb 64
 stack_top:
