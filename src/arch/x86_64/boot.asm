@@ -1,5 +1,16 @@
 global start
+extern long_mode_start
 
+section .rodata
+gdt64:
+    dq 0 ; zero entry
+
+.code: equ $ - gdt64 ; set .code to the offset from gdt64
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
+
+.pointer:
+    dw $ - gdt64 - 1
+    dq gdt64
 
 section .text
 bits 32
@@ -14,10 +25,8 @@ start:
     call set_up_page_tables
     call enable_paging
 
-    ; print "OK"
-    mov dword [0xb8000], 0xdf4bdf4f
-
-    hlt
+    lgdt [gdt64.pointer] ; load the 64-bit GDT
+    jmp gdt64.code:long_mode_start
 
 error:
     ; 0xb8000 = VGA text buffer, 4000 bytes long, each cell is 2 bytes (1 ASCII 1 color attribute)
