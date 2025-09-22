@@ -4,12 +4,14 @@ iso := build/os-$(arch).iso
 
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
+
+# assembly
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
-assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
-	build/arch/$(arch)/%.o, $(assembly_source_files))
-c_source_files := $(wildcard src/arch/$(arch)/*.c)
-c_object_files := $(patsubst src/arch/$(arch)/%.c, \
-	build/arch/$(arch)/%.o, $(c_source_files))
+assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, build/arch/$(arch)/%.o, $(assembly_source_files))
+
+# C files in kernel/ folder
+c_source_files := $(wildcard src/arch/$(arch)/kernel/*.c)
+c_object_files := $(patsubst src/arch/$(arch)/kernel/%.c, build/arch/$(arch)/kernel/%.o, $(c_source_files))
 
 .PHONY: all clean run iso
 
@@ -33,14 +35,12 @@ $(iso): $(kernel) $(grub_cfg)
 $(kernel): $(assembly_object_files) $(c_object_files) $(linker_script)
 	@ld -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(c_object_files)
 
-
 # compile assembly files
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -felf64 $< -o $@
 
-# compile C files
-build/arch/$(arch)/%.o: src/arch/$(arch)/%.c
+# compile C files in kernel/ folder
+build/arch/$(arch)/kernel/%.o: src/arch/$(arch)/kernel/%.c
 	@mkdir -p $(shell dirname $@)
 	@gcc -ffreestanding -m64 -c $< -o $@
-
