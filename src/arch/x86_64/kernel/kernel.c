@@ -1,3 +1,5 @@
+#include <paging.h>
+#include <stddef.h>
 #include <stdint.h>
 
 void print_welcome_message() {
@@ -30,5 +32,7 @@ void print_welcome_message() {
 }
 
 void kmain(void) {
+    init_paging();
+
     print_welcome_message();
 }

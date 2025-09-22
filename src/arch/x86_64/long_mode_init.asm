@@ -3,6 +3,11 @@ global long_mode_start
 section .text
 bits 64
 
+global set_cr3
+set_cr3:
+    mov cr3, rdi
+    ret
+
 long_mode_start:
     ; initialize stack
     mov rsp, stack_top
