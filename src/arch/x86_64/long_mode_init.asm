@@ -8,6 +8,11 @@ set_cr3:
     mov cr3, rdi
     ret
 
+global set_idtr
+set_idtr:
+    lidt [rdi]
+    ret
+
 long_mode_start:
     ; initialize stack
     mov rsp, stack_top
@@ -29,10 +34,11 @@ long_mode_start:
     hlt
 
 .clear_vga_buffer:
-    mov word [0xb8000 + rcx * 2], 0x0000
+    ; TODO: understand stosq optimization
+    mov dword [0xb8000 + rcx * 4], 0x00000000
 
     inc rcx
-    cmp rcx, 2000
+    cmp rcx, 1000
     jne .clear_vga_buffer
 
     ret

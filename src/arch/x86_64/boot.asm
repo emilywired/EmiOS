@@ -4,6 +4,7 @@ extern long_mode_start
 section .rodata
 gdt64:
     dq 0 ; zero entry
+    ; NOTE: any additions will break page fault handler
 
 .code: equ $ - gdt64 ; set .code to the offset from gdt64
     dq (1<<43) | (1<<44) | (1<<47) | (1<<53) ; code segment
@@ -161,5 +162,5 @@ p3_table:
 p2_table:
     resb 4096
 stack_bottom:
-    resb 64
+    resb 4096
 stack_top:

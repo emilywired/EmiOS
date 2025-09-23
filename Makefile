@@ -43,4 +43,4 @@ build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 # compile C files in kernel/ folder
 build/arch/$(arch)/kernel/%.o: src/arch/$(arch)/kernel/%.c
 	@mkdir -p $(shell dirname $@)
-	@gcc -ffreestanding -m64 -c $< -o $@
+	@gcc -ffreestanding -fno-stack-protector -nostdlib -m64 -c $< -o $@

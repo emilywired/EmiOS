@@ -1,6 +1,8 @@
-#include "paging.h"
 #include <stddef.h>
 #include <stdint.h>
+
+#include "idtr.h"
+#include "paging.h"
 
 void print_welcome_message() {
     volatile uint16_t* vga = (uint16_t*)0xb8000;
@@ -33,6 +35,8 @@ void print_welcome_message() {
 
 void kmain(void) {
     init_paging();
+    init_idtr();
+    // register_page_fault_handler();
 
     print_welcome_message();
 }
