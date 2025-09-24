@@ -20,6 +20,8 @@ struct InterruptDescriptor64 {
 } __attribute__((packed));
 
 struct IDTR init_idtr();
-void register_page_fault_handler(uint64_t handler_addr);
+
+void register_all_exceptions();
+struct InterruptDescriptor64* idtr_get_idt();
 
 #endif

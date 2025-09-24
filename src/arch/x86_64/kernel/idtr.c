@@ -1,7 +1,7 @@
 #include "idtr.h"
 
 static struct IDTR idtr;
-static struct InterruptDescriptor64 idt[IDT_ENTRY_LIMIT];
+static struct InterruptDescriptor64 idt[IDT_ENTRY_LIMIT] = {0};
 
 extern void set_idtr(void* idtr);
 
@@ -14,14 +14,14 @@ struct IDTR init_idtr() {
     return idtr;
 }
 
-void register_page_fault_handler(uint64_t handler_addr) {
-    struct InterruptDescriptor64* page_fault_entry = &idt[14];
+struct InterruptDescriptor64* idtr_get_idt() { return idt; }
 
-    page_fault_entry->offset_1 = (uint16_t)handler_addr;
-    page_fault_entry->selector = 0x08;
-    // page_fault_entry->ist =
-    // page_fault_entry->type_attributes =
-    page_fault_entry->offset_2 = (uint16_t)(handler_addr >> 16);
-    page_fault_entry->offset_3 = (uint32_t)(handler_addr >> 32);
-    // page_fault_entry->zero;  // reserved
+// Forward declaration of handlers
+extern void register_page_fault_handler(struct InterruptDescriptor64* idt,
+                                        uint64_t handler_addr);
+extern void page_fault_handler(void);
+
+void register_all_exceptions() {
+    struct InterruptDescriptor64* idt = idtr_get_idt();
+    register_page_fault_handler(idt, (uint64_t)page_fault_handler);
 }

@@ -3,6 +3,12 @@
         "system_error": "c",
         "stdint.h": "c",
         "stddef.h": "c",
-        "paging.h": "c"
+        "paging.h": "c",
+        "cstring": "c",
+        "compare": "c",
+        "cstdint": "c",
+        "format": "c",
+        "vga.h": "c",
+        "idtr.h": "c"
     }
 }
