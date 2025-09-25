@@ -4,36 +4,47 @@
 
 volatile uint16_t* vga = (uint16_t*)0xb8000;
 
+static uint8_t cursor_row = 0;
+static uint8_t cursor_column = 0;
+
 void vga_clear() {
     for (size_t i = 0; i < VGA_SIZE; i++) {
         vga[i] = 0x0000;
     }
 }
 
-// TODO: move to higher abstraction module
-void vga_print_welcome_message() {
-    vga[0] = 0xdf57;
-    vga[1] = 0xdf65;
-    vga[2] = 0xdf6c;
-    vga[3] = 0xdf63;
-    vga[4] = 0xdf6f;
-    vga[5] = 0xdf6d;
-    vga[6] = 0xdf65;
+inline void vga_write_char(char c, uint8_t column, uint8_t row,
+                           vga_color_t color) {
+    uint16_t cell = column + row * VGA_WIDTH;
+    if (cell >= VGA_SIZE) return;
 
-    vga[7] = 0xdf20;
+    vga[cell] = (color << 8) + c;
+}
 
-    vga[8] = 0xdf74;
-    vga[9] = 0xdf6f;
+inline static void cursor_next_line() {
+    cursor_row++;
+    cursor_column = 0;
+}
 
-    vga[10] = 0xdf20;
+void vga_print(const char* str, vga_color_t color) {
+    for (size_t i = 0; str[i] != '\0'; i++) {
+        if (str[i] == '\0') break;
 
-    vga[11] = 0xdb45;
-    vga[12] = 0xdb6d;
-    vga[13] = 0xdb69;
-    vga[14] = 0xdb4f;
-    vga[15] = 0xdb53;
+        if (str[i] == '\n') {
+            cursor_next_line();
+            continue;
+        }
 
-    vga[16] = 0xdf21;
-    vga[17] = 0xdf21;
-    vga[18] = 0xdf21;
+        vga_write_char(str[i], cursor_column, cursor_row, color);
+        if (cursor_column == 80) {
+            cursor_next_line();
+        } else {
+            cursor_column++;
+        }
+    }
+}
+
+inline void vga_println(const char* str, vga_color_t color) {
+    vga_print(str, color);
+    cursor_next_line();
 }

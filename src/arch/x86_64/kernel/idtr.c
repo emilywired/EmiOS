@@ -5,13 +5,12 @@ static struct InterruptDescriptor64 idt[IDT_ENTRY_LIMIT] = {0};
 
 extern void set_idtr(void* idtr);
 
-struct IDTR init_idtr() {
+void init_idtr() {
     uint16_t limit = IDT_ENTRY_LIMIT * 16 - 1;
     idtr.limit = limit;
     idtr.base = (uint64_t)idt;
 
     set_idtr(&idtr);
-    return idtr;
 }
 
 struct InterruptDescriptor64* idtr_get_idt() { return idt; }

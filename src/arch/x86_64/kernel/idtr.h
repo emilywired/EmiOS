@@ -19,8 +19,7 @@ struct InterruptDescriptor64 {
     uint32_t zero;            // reserved
 } __attribute__((packed));
 
-struct IDTR init_idtr();
-
+void init_idtr();
 void register_all_exceptions();
 struct InterruptDescriptor64* idtr_get_idt();
 
