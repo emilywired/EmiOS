@@ -9,6 +9,7 @@
         "cstdint": "c",
         "format": "c",
         "vga.h": "c",
-        "idtr.h": "c"
+        "idtr.h": "c",
+        "exceptions.h": "c"
     }
 }

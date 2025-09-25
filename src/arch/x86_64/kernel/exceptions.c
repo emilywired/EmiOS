@@ -15,6 +15,8 @@ void register_page_fault_handler(struct InterruptDescriptor64* idt,
 }
 
 void page_fault_handler(void) {
-    vga_clear();
+    vga_clear(0x1000);
+    vga_println("Page Fault", VGA_COLOR(BLUE, BRIGHT_WHITE));
+
     __asm__ volatile("hlt");
 }

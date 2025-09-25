@@ -30,7 +30,7 @@ typedef uint8_t vga_color_t;
 
 extern volatile uint16_t* vga;
 
-void vga_clear();
+void vga_clear(uint16_t cell);
 void vga_write_char(char c, uint8_t column, uint8_t row, vga_color_t color);
 void vga_print(const char* str, vga_color_t color);
 void vga_println(const char* str, vga_color_t color);

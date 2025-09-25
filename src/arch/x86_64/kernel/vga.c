@@ -7,9 +7,9 @@ volatile uint16_t* vga = (uint16_t*)0xb8000;
 static uint8_t cursor_row = 0;
 static uint8_t cursor_column = 0;
 
-void vga_clear() {
+void vga_clear(uint16_t cell) {
     for (size_t i = 0; i < VGA_SIZE; i++) {
-        vga[i] = 0x0000;
+        vga[i] = cell;
     }
 }
 
@@ -36,6 +36,7 @@ void vga_print(const char* str, vga_color_t color) {
         }
 
         vga_write_char(str[i], cursor_column, cursor_row, color);
+
         if (cursor_column == 80) {
             cursor_next_line();
         } else {
